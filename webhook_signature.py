@@ -1,6 +1,7 @@
 from abc import ABCMeta
 import hmac
 import hashlib
+from .util.util import Util
 
 class WebhookSignature(metaclass=ABCMeta):
     EXPECTED_SCHEME = 's'
@@ -18,13 +19,15 @@ class WebhookSignature(metaclass=ABCMeta):
             # todo: raise exception
             print('SignatureVerification Error: No signatures found with expected scheme')
         
-        signed_payload = timestamp + '.' + payload
+        signed_payload = str(timestamp) + '.' + str(payload)
         expected_signature = cls.__compute_signature(signed_payload, secret)
         signature_found = False
         for signature in signatures:
-            # secure_compare
-            pass
-        
+            if Util.secure_compare(expected_signature, signature):
+                signature_found = True
+                break
+
+        print('SIGNATURE FOUND', signature_found)
         
     @staticmethod
     def __get_timestamp(header):
@@ -50,7 +53,7 @@ class WebhookSignature(metaclass=ABCMeta):
     @staticmethod
     def __compute_signature(payload, secret):
         return hmac.new(
-            bytes(secret, 'latin-1'), 
+            bytes(str(secret), 'latin-1'), 
             msg=bytes(payload, 'latin-1'), 
             digestmod=hashlib.sha256
             ).hexdigest()
