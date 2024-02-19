@@ -22,6 +22,6 @@ class Util(metaclass=ABCMeta):
             for i in range(len(a)):
                 result |= ord(a[i]) ^ ord(b[i])
             
-            return result
+            return result == 0
         
     
