@@ -11,6 +11,8 @@ class Webhook():
     
     @staticmethod
     def construct_event(payload, signature_header, secret, tolerance=DEFAULT_TOLERANCE):
+        if hasattr(payload, "decode"):
+            payload = payload.decode("utf-8")
         WebhookSignature.verify_header(payload, signature_header, secret, tolerance)
         
         data = json.loads(payload)
